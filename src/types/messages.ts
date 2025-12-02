@@ -32,17 +32,27 @@ export interface UnhighlightRequest {
   type: 'UNHIGHLIGHT'
 }
 
+export interface GetDOMInfoRequest {
+  type: 'GET_DOM_INFO'
+}
+
 export type ContentMessage = 
   | EvaluateRequest 
   | ClearRequest 
   | ScrollToRequest 
   | HighlightRequest
   | UnhighlightRequest
+  | GetDOMInfoRequest
 
 export interface EvaluateResponse {
   success: boolean
   count: number
   elements: ElementInfo[]
   error?: string
+}
+
+export interface DOMInfoResponse {
+  tagNames: string[]
+  attributeNames: string[]
 }
 

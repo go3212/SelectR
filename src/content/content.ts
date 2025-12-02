@@ -1,10 +1,15 @@
-import type { ContentMessage, EvaluateResponse, ElementInfo } from '../types/messages'
+import type { ContentMessage, EvaluateResponse, ElementInfo, DOMInfoResponse } from '../types/messages'
 
 const HIGHLIGHT_CLASS = 'xpath-tester-highlight'
 const FOCUSED_CLASS = 'xpath-tester-focused'
 const STYLE_ID = 'xpath-tester-styles'
 
 let matchedElements: Element[] = []
+
+// Cache for DOM info to avoid re-scanning on every keystroke
+let domInfoCache: DOMInfoResponse | null = null
+let domInfoCacheTime = 0
+const DOM_INFO_CACHE_TTL = 5000 // 5 seconds
 
 function injectStyles(): void {
   if (document.getElementById(STYLE_ID)) return
@@ -134,6 +139,57 @@ function handleUnhighlight(): void {
   })
 }
 
+function getDOMInfo(): DOMInfoResponse {
+  const now = Date.now()
+  
+  // Return cached data if still valid
+  if (domInfoCache && (now - domInfoCacheTime) < DOM_INFO_CACHE_TTL) {
+    return domInfoCache
+  }
+  
+  const tagSet = new Set<string>()
+  const attrSet = new Set<string>()
+  
+  // Walk through all elements in the document
+  const walker = document.createTreeWalker(
+    document.body,
+    NodeFilter.SHOW_ELEMENT,
+    null
+  )
+  
+  let node = walker.currentNode as Element
+  const maxElements = 5000 // Limit to avoid performance issues on large pages
+  let count = 0
+  
+  while (node && count < maxElements) {
+    // Collect tag name (lowercase)
+    tagSet.add(node.tagName.toLowerCase())
+    
+    // Collect attribute names
+    for (const attr of node.attributes) {
+      // Skip internal/extension attributes
+      if (!attr.name.startsWith('xpath-tester-')) {
+        attrSet.add(attr.name)
+      }
+    }
+    
+    node = walker.nextNode() as Element
+    count++
+  }
+  
+  // Sort alphabetically for consistent ordering
+  const result: DOMInfoResponse = {
+    tagNames: Array.from(tagSet).sort(),
+    attributeNames: Array.from(attrSet).sort(),
+  }
+  
+  // Update cache
+  domInfoCache = result
+  domInfoCacheTime = now
+  
+  return result
+}
+
 chrome.runtime.onMessage.addListener(
   (message: ContentMessage, _sender, sendResponse) => {
     switch (message.type) {
@@ -155,6 +211,9 @@ chrome.runtime.onMessage.addListener(
       case 'UNHIGHLIGHT':
         handleUnhighlight()
         sendResponse({ success: true })
+        break
+      case 'GET_DOM_INFO':
+        sendResponse(getDOMInfo())
         break
     }
     return true
