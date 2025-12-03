@@ -7,6 +7,7 @@
     "icons": "node scripts/generate-icons.js",
     "dev": "vite build --watch",
     "build": "node scripts/generate-icons.js && tsc && vite build",
+    "package": "pnpm build && cd dist && zip -r ../selectr.zip . && cd .. && echo '✅ Created selectr.zip'",
     "preview": "vite preview"
   },
   "devDependencies": {
