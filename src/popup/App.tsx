@@ -158,7 +158,7 @@ function App() {
               />
             </svg>
           </div>
-          <h1 className="font-semibold text-zinc-100">Selector Tester</h1>
+          <h1 className="font-semibold text-zinc-100">SelectR</h1>
         </div>
         <ModeToggle mode={mode} onChange={handleModeChange} />
       </div>

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "XPath & CSS Selector Tester",
+  "name": "SelectR - XPath & CSS Selector Tester",
   "version": "1.0.0",
-  "description": "Test XPath and CSS selectors on any webpage with live highlighting",
+  "description": "Test and debug XPath and CSS selectors instantly. Live element highlighting, smart autocomplete, and one-click navigation to matched elements.",
   "permissions": ["activeTab", "scripting", "storage", "sidePanel"],
   "action": {
     "default_icon": {

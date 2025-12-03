@@ -1,7 +1,7 @@
 {
-  "name": "xpath-tester",
+  "name": "selectr",
   "version": "1.0.0",
-  "description": "Chrome extension for testing XPath and CSS selectors",
+  "description": "SelectR - Test and debug XPath and CSS selectors instantly with live highlighting and smart autocomplete",
   "type": "module",
   "scripts": {
     "icons": "node scripts/generate-icons.js",
